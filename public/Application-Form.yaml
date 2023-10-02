@@ -1,0 +1,222 @@
+openapi: 3.0.0
+info:
+  version: '1.0'
+  title: Application Form API
+  description: API Task
+servers:
+  - url: 'http://127.0.0.1:4010'
+    description: Prism Mock Server
+paths:
+  '/api/{version}/programs/{programId}/application-form':
+    get:
+      tags:
+        - Application Template
+      summary: Retrieve application form
+      description: Get the data from API
+      operationId: get-applicationForm
+      parameters:
+        - name: programId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: version
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationFOrm'
+      servers:
+        - url: 'http://127.0.0.1:4010'
+          description: Prism Mock Server
+    put:
+      tags:
+        - Application Template
+      summary: Upsert application form
+      description: Put the new data up to the API (instantous update) without posting it!
+      operationId: update-applicationForm
+      parameters:
+        - name: programId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: version
+          in: path
+          required: true
+          schema:
+            type: number
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationFOrm'
+      responses:
+        '204':
+          description: No Content
+      servers:
+        - url: 'http://127.0.0.1:4010'
+          description: Prism Mock Server
+tags:
+  - name: Application Template
+    description: Application template grouping
+components:
+  schemas:
+    ApplicationFOrm:
+      type: object
+      description: Any Application form should contain the following schema
+      properties:
+        data:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            type:
+              type: string
+              default: applicationForm
+            attributes:
+              $ref: '#/components/schemas/ApplicationFormAttributes'
+            '':
+              type: string
+          required:
+            - id
+            - type
+            - attributes
+      required:
+        - data
+    ApplicationFormAttributes:
+      type: object
+      title: ApplicationFormAttributes
+      description: Main API.
+      properties:
+        coverImage:
+          type: string
+          format: uri
+        personalInformation:
+          type: object
+          properties:
+            firstName:
+              $ref: '#/components/schemas/PersonalInformationTemplate'
+            lastName:
+              $ref: '#/components/schemas/PersonalInformationTemplate'
+            emailId:
+              $ref: '#/components/schemas/PersonalInformationTemplate'
+            phoneNumber:
+              $ref: '#/components/schemas/PersonalInformationTemplate'
+            nationality:
+              $ref: '#/components/schemas/PersonalInformationTemplate'
+            currentResidence:
+              $ref: '#/components/schemas/PersonalInformationTemplate'
+            idNumber:
+              $ref: '#/components/schemas/PersonalInformationTemplate'
+            dateOfBirth:
+              $ref: '#/components/schemas/PersonalInformationTemplate'
+            gender:
+              $ref: '#/components/schemas/PersonalInformationTemplate'
+            personalQuestions:
+              type: array
+              items:
+                $ref: '#/components/schemas/QuestionTemplate'
+          required:
+            - firstName
+            - lastName
+            - emailId
+            - phoneNumber
+            - nationality
+            - currentResidence
+            - idNumber
+            - dateOfBirth
+            - gender
+        profile:
+          type: object
+          properties:
+            education:
+              $ref: '#/components/schemas/ProfileTemplate'
+            experience:
+              $ref: '#/components/schemas/ProfileTemplate'
+            resume:
+              $ref: '#/components/schemas/ProfileTemplate'
+            profileQuestions:
+              type: array
+              items:
+                $ref: '#/components/schemas/QuestionTemplate'
+          required:
+            - education
+            - experience
+            - resume
+        customisedQuestions:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestionTemplate'
+      required:
+        - personalInformation
+    PersonalInformationTemplate:
+      type: object
+      title: PersonalInformationTemplate
+      description: 'Personal Information template for internalUse and show variables of different parameters such as First Name, Last Name, etc..'
+      properties:
+        internalUse:
+          type: boolean
+          default: false
+        show:
+          type: boolean
+          default: true
+      required:
+        - internalUse
+        - show
+    QuestionTemplate:
+      type: object
+      title: QuestionTemplate
+      description: Question Template for any question that might be added
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          enum:
+            - Paragraph
+            - ShortAnswer
+            - YesNo
+            - Dropdown
+            - MultipleChoice
+            - Date
+            - Number
+            - FileUpload
+        question:
+          type: string
+        choices:
+          type: array
+          items:
+            type: string
+        maxChoice:
+          type: integer
+        disqualify:
+          type: boolean
+          default: false
+        other:
+          type: boolean
+          default: false
+      required:
+        - type
+        - question
+    ProfileTemplate:
+      type: object
+      title: ProfileTemplate
+      description: 'Personal Information template for internalUse and show variables of different parameters such as Education, etc..'
+      properties:
+        mandatory:
+          type: boolean
+          default: true
+        show:
+          type: boolean
+          default: true
+      required:
+        - mandatory
+        - show
